@@ -347,7 +347,7 @@ async function startDemo() {
   await addBookingButtons();
   
   // 等待用户选择（这里模拟选择Yes）
-  await sleep(1500);
+  await sleep(2500);
   const bookingDiv = document.querySelector('.booking-options');
   bookingDiv.remove();
   await typeMessage("Yes, I would like to book an appointment.", true);
