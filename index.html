@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IWK Smart Triage Assistant DEMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      font-family: 'Roboto', sans-serif; 
+      background: #f5f5f5; 
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 { 
+      margin: 0; 
+      font-size: 1.6rem; 
+      color: #005fa3; 
+      text-align: center;
+    }
+    .chat-container {
+      flex: 1;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin: 4px 0;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .user-message {
+      background: #0077cc;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .assistant-message {
+      background: #f0f0f0;
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .recommendation-message {
+      background: #e8f4ff;
+      color: #005fa3;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+    .caution-message {
+      background: #fff3e0;
+      color: #e65100;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+    .booking-options {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .booking-button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    .yes-button {
+      background: #0077cc;
+      color: white;
+    }
+    .yes-button:hover {
+      background: #005fa3;
+    }
+    .no-button {
+      background: #f0f0f0;
+      color: #666;
+    }
+    .no-button:hover {
+      background: #e0e0e0;
+    }
+    .input-container {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 12px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #0077cc;
+    }
+    button {
+      background: #0077cc;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .video-container {
+      margin-top: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 240px;
+      border: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .symptom-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .symptom-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .symptom-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .symptom-card h3 {
+      margin: 0 0 12px 0;
+      color: #005fa3;
+    }
+    .symptom-card p {
+      margin: 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .thinking {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      margin: 4px 0;
+      align-self: flex-start;
+    }
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .thinking-dots span {
+      width: 8px;
+      height: 8px;
+      background: #0077cc;
+      border-radius: 50%;
+      animation: thinking 1.4s infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes thinking {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .typing {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #333;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>IWK Smart Triage Assistant</h1>
+    </div>
+    
+    <div class="chat-container" id="chatContainer">
+      <div class="message assistant-message">
+        Welcome to IWK Smart Triage Assistant! Please select a symptom type to experience our complete diagnosis process.
+      </div>
+      <div class="symptom-options">
+        <div class="symptom-card" onclick="selectSymptom('fever')">
+          <h3>Fever Symptoms</h3>
+          <p>Experience diagnosis process for fever, cough and respiratory symptoms</p>
+        </div>
+        <div class="symptom-card" onclick="selectSymptom('stomach')">
+          <h3>Stomach Issues</h3>
+          <p>Experience diagnosis process for abdominal pain and digestive symptoms</p>
+        </div>
+        <div class="symptom-card" onclick="selectSymptom('trauma')">
+          <h3>Trauma Care</h3>
+          <p>Experience diagnosis process for wounds and injuries</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Describe your symptoms..." disabled />
+      <button onclick="handleUserInput()" disabled>Send</button>
+    </div>
+  </div>
+
+<script>
+const demoScenarios = {
+  fever: {
+    userInput: "I have a fever of 38.5°C and headache, it's been going on for two days",
+    responses: [
+      "Let me analyze your symptoms...",
+      "Based on your description, you might have a respiratory infection (cold or flu).",
+      "Recommendations:\n1. Get plenty of rest and sleep\n2. Stay hydrated with warm water\n3. Consider taking antipyretics like ibuprofen\n4. Seek immediate medical attention if you experience breathing difficulties",
+      "Caution: If fever persists for more than 3 days, or if you experience breathing difficulties or chest pain, seek immediate medical attention.",
+      "Here's a helpful video about fever management:"
+    ]
+  },
+  stomach: {
+    userInput: "I started having abdominal pain after dinner last night, and I've vomited twice this morning",
+    responses: [
+      "Let me analyze your symptoms...",
+      "Based on your description, you might have gastroenteritis or food poisoning.",
+      "Recommendations:\n1. Avoid food for 2-3 hours\n2. Take small sips of water frequently\n3. Avoid oily and spicy foods\n4. Consider taking anti-nausea medication like domperidone",
+      "Caution: If you show signs of severe dehydration (dry mouth, reduced urine output, dizziness), seek immediate medical attention.",
+      "Here's a helpful video about gastroenteritis management:"
+    ]
+  },
+  trauma: {
+    userInput: "I accidentally fell and scraped my knee, it's still bleeding",
+    responses: [
+      "Let me analyze your symptoms...",
+      "Based on your description, this is a typical skin abrasion.",
+      "Recommendations:\n1. Clean the wound with water\n2. Disinfect with iodine or hydrogen peroxide\n3. Apply antibiotic ointment\n4. Cover with sterile gauze",
+      "Caution: If the wound is deep, bleeding doesn't stop, or shows signs of infection (redness, swelling, fever), seek immediate medical attention.",
+      "Here's a helpful video about wound care:"
+    ]
+  }
+};
+
+const diagnosisData = {
+  fever: {
+    videoId: '7-j5pRfrJko'
+  },
+  stomach: {
+    videoId: 'e5lUayVBTVk'
+  },
+  trauma: {
+    videoId: 'lH2e30YIOQ0'
+  }
+};
+
+let currentScenario = null;
+let isDemoRunning = false;
+
+function selectSymptom(type) {
+  if (isDemoRunning) return;
+  currentScenario = type;
+  isDemoRunning = true;
+  
+  // 移除选择界面
+  const options = document.querySelector('.symptom-options');
+  options.style.display = 'none';
+  
+  // 开始演示
+  startDemo();
+}
+
+async function startDemo() {
+  const scenario = demoScenarios[currentScenario];
+  
+  // 模拟用户输入
+  await typeMessage(scenario.userInput, true);
+  await sleep(1000);
+  
+  // 显示思考动画
+  showThinking();
+  await sleep(2000);
+  hideThinking();
+  
+  // 显示AI回复
+  for (const response of scenario.responses) {
+    await typeMessage(response);
+    await sleep(1000);
+  }
+  
+  // 显示视频
+  const videoContainer = document.createElement('div');
+  videoContainer.className = 'video-container';
+  videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${diagnosisData[currentScenario].videoId}" allowfullscreen></iframe>`;
+  document.getElementById('chatContainer').appendChild(videoContainer);
+  scrollToBottom();
+  
+  // 显示预约选项
+  await sleep(1000);
+  await typeMessage("Would you like to book an appointment at IWK Emergency?");
+  
+  // 创建预约按钮
+  const bookingDiv = document.createElement('div');
+  bookingDiv.className = 'booking-options';
+  bookingDiv.innerHTML = `
+    <button class="booking-button yes-button" onclick="handleBookingChoice(true)">Yes</button>
+    <button class="booking-button no-button" onclick="handleBookingChoice(false)">No</button>
+  `;
+  document.getElementById('chatContainer').appendChild(bookingDiv);
+  scrollToBottom();
+  
+  // 等待用户选择（这里模拟选择Yes）
+  await sleep(1500);
+  bookingDiv.remove();
+  await typeMessage("Yes, I would like to book an appointment.", true);
+  await sleep(1000);
+  
+  // 显示排队信息
+  const queueNumber = Math.floor(Math.random() * 10) + 1;
+  const waitTime = queueNumber * 10;
+  await typeMessage(`Queue Information:\nPeople ahead: ${queueNumber}\nEstimated wait time: ${waitTime} minutes`);
+  await sleep(1000);
+  
+  // 询问地址
+  await typeMessage("What is your current address?");
+  await sleep(1000);
+  
+  // 模拟用户输入地址（随机选择一个地址）
+  const addresses = [
+    "123 Main Street, Halifax",
+    "45 Park Avenue, Dartmouth",
+    "789 Bedford Highway, Bedford",
+    "234 Spring Garden Road, Halifax",
+    "567 Portland Street, Dartmouth"
+  ];
+  const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+  await typeMessage(randomAddress, true);
+  await sleep(1000);
+  
+  // 根据地址和等待时间给出建议
+  const travelTime = Math.floor(Math.random() * 15) + 10; // 10-25 minutes
+  await typeMessage(`Based on your location, it will take approximately ${travelTime} minutes to reach IWK.`);
+  await sleep(1000);
+  await typeMessage(waitTime <= 30 ? 'You can prepare to leave now.' : 'You may leave in 20 minutes.');
+  
+  // 重置状态
+  isDemoRunning = false;
+  currentScenario = null;
+}
+
+function showThinking() {
+  const thinking = document.createElement('div');
+  thinking.className = 'thinking';
+  thinking.innerHTML = 'Thinking<span class="thinking-dots"><span></span><span></span><span></span></span>';
+  document.getElementById('chatContainer').appendChild(thinking);
+  scrollToBottom();
+}
+
+function hideThinking() {
+  const thinking = document.querySelector('.thinking');
+  if (thinking) thinking.remove();
+}
+
+async function typeMessage(text, isUser = false) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isUser ? 'user-message' : 'assistant-message'}`;
+  
+  // Add special classes for recommendations and cautions
+  if (text.startsWith('Recommendations:')) {
+    messageDiv.classList.add('recommendation-message');
+  } else if (text.startsWith('Caution:')) {
+    messageDiv.classList.add('caution-message');
+  }
+  
+  document.getElementById('chatContainer').appendChild(messageDiv);
+  
+  const words = text.split(' ');
+  for (let i = 0; i < words.length; i++) {
+    messageDiv.textContent += words[i] + ' ';
+    // 每次添加新词时都滚动到底部
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    await sleep(50);
+  }
+}
+
+// 添加一个通用的滚动函数
+function scrollToBottom() {
+  const chatContainer = document.getElementById('chatContainer');
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// 禁用输入框和按钮
+document.getElementById('userInput').disabled = true;
+document.querySelector('button').disabled = true;
+
+// 添加预约选择处理函数
+function handleBookingChoice(choice) {
+  const bookingDiv = document.querySelector('.booking-options');
+  if (bookingDiv) {
+    bookingDiv.remove();
+  }
+  typeMessage(choice ? "Yes, I would like to book an appointment." : "No, thank you.", true);
+}
+</script>
+
+</body>
+</html>
