@@ -376,7 +376,7 @@ async function startDemo() {
   await sleep(1000);
   
   // 根据地址和等待时间给出建议
-  const travelTime = Math.floor(Math.random() * 15) + 10; // 10-25 minutes
+  const travelTime = Math.floor(Math.random() * 15) + 20; // 20-35 minutes
   await typeMessage(`Based on your location, it will take approximately ${travelTime} minutes to reach IWK.`);
   await sleep(1000);
   await typeMessage(waitTime <= 30 ? 'You can prepare to leave now.' : 'You may leave in 20 minutes.');
