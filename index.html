@@ -379,7 +379,7 @@ async function startDemo() {
   const travelTime = Math.floor(Math.random() * 15) + 20; // 20-35 minutes
   await typeMessage(`Based on your location, it will take approximately ${travelTime} minutes to reach IWK.`);
   await sleep(1000);
-  await typeMessage(waitTime <= 30 ? 'You can prepare to leave now.' : 'You may leave in 20 minutes.');
+  await typeMessage(waitTime <= 30 ? 'You can prepare to leave now.' : 'You may leave in 30 minutes.');
   
   // 重置状态
   isDemoRunning = false;
@@ -457,7 +457,7 @@ async function addVideoContainer(videoId) {
   videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
   document.getElementById('chatContainer').appendChild(videoContainer);
   // 等待视频容器加载完成
-  await sleep(100);
+  await sleep(300);
   scrollToBottom();
 }
 
