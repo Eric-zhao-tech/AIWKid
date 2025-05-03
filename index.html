@@ -259,8 +259,13 @@
 <script>
 const demoScenarios = {
   fever: {
-    userInput: "I have a fever of 38.5°C and headache, it's been going on for two days",
+    userInput: "I have a fever",
     responses: [
+      "Let me analyze your symptoms...",
+      "I understand you have a fever. Could you please provide more details about your symptoms? For example:\n- How high is your fever?\n- How long have you had it?\n- Are you experiencing any other symptoms like cough or headache?"
+    ],
+    followUpInput: "I have a fever of 38.5°C and headache, it's been going on for two days",
+    followUpResponses: [
       "Let me analyze your symptoms...",
       "Based on your description, you might have a respiratory infection (cold or flu).",
       "Recommendations:\n1. Get plenty of rest and sleep\n2. Stay hydrated with warm water\n3. Consider taking antipyretics like ibuprofen\n4. Seek immediate medical attention if you experience breathing difficulties",
@@ -269,8 +274,13 @@ const demoScenarios = {
     ]
   },
   stomach: {
-    userInput: "I started having abdominal pain after dinner last night, and I've vomited twice this morning",
+    userInput: "I have stomach pain",
     responses: [
+      "Let me analyze your symptoms...",
+      "I understand you have stomach pain. Could you please provide more details about your symptoms? For example:\n- When did the pain start?\n- Have you vomited?\n- Is the pain constant or intermittent?\n- Are you experiencing any other symptoms?"
+    ],
+    followUpInput: "I started having abdominal pain after dinner last night, and I've vomited twice this morning",
+    followUpResponses: [
       "Let me analyze your symptoms...",
       "Based on your description, you might have gastroenteritis or food poisoning.",
       "Recommendations:\n1. Avoid food for 2-3 hours\n2. Take small sips of water frequently\n3. Avoid oily and spicy foods\n4. Consider taking anti-nausea medication like domperidone",
@@ -279,8 +289,13 @@ const demoScenarios = {
     ]
   },
   trauma: {
-    userInput: "I accidentally fell and scraped my knee, it's still bleeding",
+    userInput: "I have an injury",
     responses: [
+      "Let me analyze your symptoms...",
+      "I understand you have an injury. Could you please provide more details about your symptoms? For example:\n- What type of injury is it?\n- Where is the injury located?\n- Is there any bleeding?\n- When did the injury occur?"
+    ],
+    followUpInput: "I accidentally fell and scraped my knee, it's still bleeding",
+    followUpResponses: [
       "Let me analyze your symptoms...",
       "Based on your description, this is a typical skin abrasion.",
       "Recommendations:\n1. Clean the wound with water\n2. Disinfect with iodine or hydrogen peroxide\n3. Apply antibiotic ointment\n4. Cover with sterile gauze",
@@ -321,7 +336,7 @@ function selectSymptom(type) {
 async function startDemo() {
   const scenario = demoScenarios[currentScenario];
   
-  // 模拟用户输入
+  // 第一轮对话：基本症状描述
   await typeMessage(scenario.userInput, true);
   await sleep(1000);
   
@@ -330,8 +345,26 @@ async function startDemo() {
   await sleep(2000);
   hideThinking();
   
-  // 显示AI回复
+  // 显示AI的第一轮回复
   for (const response of scenario.responses) {
+    await typeMessage(response);
+    await sleep(1000);
+  }
+  
+  // 等待一段时间后显示第二轮对话
+  await sleep(2000);
+  
+  // 第二轮对话：详细症状描述
+  await typeMessage(scenario.followUpInput, true);
+  await sleep(1000);
+  
+  // 显示思考动画
+  await showThinking();
+  await sleep(2000);
+  hideThinking();
+  
+  // 显示AI的第二轮回复
+  for (const response of scenario.followUpResponses) {
     await typeMessage(response);
     await sleep(1000);
   }
