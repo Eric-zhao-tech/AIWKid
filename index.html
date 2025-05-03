@@ -353,6 +353,23 @@ async function startDemo() {
   await typeMessage("Yes, I would like to book an appointment.", true);
   await sleep(1000);
   
+  // 生成预约编号和二维码
+  const appointmentId = 'IWK-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+  await typeMessage(`Your appointment ID is: ${appointmentId}`);
+  await sleep(1000);
+  
+  // 创建二维码容器
+  const qrContainer = document.createElement('div');
+  qrContainer.className = 'qr-container';
+  qrContainer.style.textAlign = 'center';
+  qrContainer.style.margin = '20px 0';
+  qrContainer.innerHTML = `
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${appointmentId}" alt="Appointment QR Code">
+    <p style="margin-top: 10px; color: #005fa3; font-weight: 500;">Scan this QR code at the hospital entrance for quick check-in</p>
+  `;
+  document.getElementById('chatContainer').appendChild(qrContainer);
+  await sleep(1000);
+  
   // 显示排队信息
   const queueNumber = Math.floor(Math.random() * 10) + 1;
   const waitTime = queueNumber * 10;
